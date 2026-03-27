@@ -39,6 +39,21 @@
       color: red;
       font-weight: bold;
     }
+
+    /* ✅ NEW: Instruction images styling */
+    .instructions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .instructions img {
+      width: 140px;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
     footer {
       margin-top: 50px;
       font-size: 1em;
@@ -157,6 +172,12 @@
               <p><strong>Block:</strong> ${blockInfo}</p>
               <p><strong>Time:</strong> <span class="time">${timeInfo}</span></p>
               <button onclick="openMap('${buildingCode}')">View on Google Map</button>
+
+              <!-- ✅ NEW: Instruction Images -->
+              <div class="instructions">
+                <img src="instruction1.png" alt="Instruction 1">
+                <img src="instruction2.png" alt="Instruction 2">
+              </div>
             `;
           } else {
             card.innerHTML = `<p class="time">${status}</p>`;

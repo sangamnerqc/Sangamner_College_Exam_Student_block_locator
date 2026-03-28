@@ -9,7 +9,6 @@
       font-family: Arial, sans-serif;
       text-align: center;
       padding: 40px;
-      padding-bottom: 180px; /* space for fixed instructions */
     }
 
     input, button {
@@ -47,33 +46,27 @@
       font-weight: bold;
     }
 
-    footer {
-      margin-top: 50px;
-      font-weight: bold;
-    }
-
-    /* ✅ FIXED INSTRUCTIONS */
-    #fixedInstructions {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: white;
-      border-top: 2px solid #ccc;
-      padding: 10px;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    /* ✅ Instructions Section (Normal Flow) */
+    #instructionsSection {
+      margin-top: 40px;
     }
 
     .instructions {
       display: flex;
       justify-content: center;
       gap: 10px;
+      margin-top: 10px;
     }
 
     .instructions img {
-      width: 120px;
+      width: 140px;
       border-radius: 8px;
       border: 1px solid #ccc;
+    }
+
+    footer {
+      margin-top: 30px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -94,10 +87,11 @@
 
   <button onclick="findStudent()">Submit</button>
 
+  <!-- ✅ RESULTS -->
   <div id="results"></div>
 
-  <!-- ✅ ALWAYS VISIBLE INSTRUCTIONS -->
-  <div id="fixedInstructions">
+  <!-- ✅ INSTRUCTIONS (ABOVE FOOTER, WILL SHIFT DOWN) -->
+  <div id="instructionsSection">
     <h3>Important Instructions</h3>
     <div class="instructions">
       <img src="instruction1.jpeg" alt="Instruction 1">
@@ -105,6 +99,7 @@
     </div>
   </div>
 
+  <!-- ✅ FOOTER -->
   <footer>
     &copy; 2025 ajitkaranjekar@sangamnercollege.edu.in
   </footer>
@@ -196,7 +191,6 @@ function matchStudents(seatNo, examDate) {
           <p><strong>Building:</strong> ${buildingFullName}</p>
           <p><strong>Block:</strong> ${buildingCode}-${student.Block}</p>
           <p><strong>Time:</strong> <span class="time">${student.Time}</span></p>
-
           <button onclick="openMap('${buildingCode}')">View on Google Map</button>
         `;
       } else {

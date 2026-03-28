@@ -46,7 +46,7 @@
       font-weight: bold;
     }
 
-    /* ✅ Instructions Section (Normal Flow) */
+    /* ✅ Instructions Section */
     #instructionsSection {
       margin-top: 40px;
     }
@@ -54,13 +54,17 @@
     .instructions {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 15px;
       margin-top: 10px;
+      flex-wrap: wrap; /* helps on mobile */
     }
 
+    /* ✅ DOUBLED IMAGE SIZE */
     .instructions img {
-      width: 140px;
-      border-radius: 8px;
+      width: 280px;
+      max-width: 90%;
+      height: auto;
+      border-radius: 10px;
       border: 1px solid #ccc;
     }
 
@@ -90,7 +94,7 @@
   <!-- ✅ RESULTS -->
   <div id="results"></div>
 
-  <!-- ✅ INSTRUCTIONS (ABOVE FOOTER, WILL SHIFT DOWN) -->
+  <!-- ✅ INSTRUCTIONS -->
   <div id="instructionsSection">
     <h3>Important Instructions</h3>
     <div class="instructions">

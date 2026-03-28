@@ -3,20 +3,24 @@
 <head>
   <title>Exam Block Finder</title>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
       padding: 40px;
     }
+
     input, button {
       padding: 10px;
       margin: 10px;
     }
+
     #results {
       margin-top: 30px;
       display: none;
     }
+
     .result-card {
       border: 1px solid #ccc;
       padding: 20px;
@@ -25,28 +29,31 @@
       margin: 15px auto;
       box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
     }
+
     #college-logo {
       width: 120px;
       height: auto;
       margin-bottom: 10px;
     }
+
     #college-name {
       font-size: 1.5em;
       font-weight: bold;
       margin-bottom: 20px;
     }
+
     .time {
       color: red;
       font-weight: bold;
     }
 
-    /* ✅ NEW: Instruction images styling */
     .instructions {
       display: flex;
       justify-content: center;
       gap: 10px;
       margin-top: 15px;
     }
+
     .instructions img {
       width: 140px;
       height: auto;
@@ -62,17 +69,22 @@
     }
   </style>
 </head>
+
 <body>
 
+  <!-- Logo -->
   <img src="logo.png" alt="College Logo" id="college-logo" />
+
   <div id="college-name">
     Sangamner Nagarpalika Arts, D J Malpani Commerce & B N Sarda Science College (Autonomous), Sangamner
   </div>
 
   <h1>Find Your Exam Block</h1>
+
   <input type="text" id="seatNo" placeholder="Enter Seat Number" />
   <input type="date" id="examDate" />
   <br>
+
   <button onclick="findStudent()">Submit</button>
 
   <div id="results"></div>
@@ -81,173 +93,157 @@
     &copy; 2025 ajitkaranjekar@sangamnercollege.edu.in
   </footer>
 
-  <script>
-    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTLWAt7sXY_iv_GBv9S7YdN4TkH7Wy_zQq9d1D9ItxGchX7O81sO5NKc2KhD5PnpdAPTcbG7tCooRXa/pub?output=csv";
+<script>
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTLWAt7sXY_iv_GBv9S7YdN4TkH7Wy_zQq9d1D9ItxGchX7O81sO5NKc2KhD5PnpdAPTcbG7tCooRXa/pub?output=csv";
 
-    const buildingNames = {
-      "PB": "Parakh Bhavan",
-      "KB": "Kashalya Bhavan",
-      "RB": "Research Building",
-      "PH": "Physics Building",
-      "CM": "Commerce Building",
-      "BCS": "Computer Science",
-      "BEd": "B.Ed. Building",
-      "SC": "Science Building",
-      "LAW": "Law College"
-    };
+const buildingNames = {
+  "PB": "Parakh Bhavan",
+  "KB": "Kashalya Bhavan",
+  "RB": "Research Building",
+  "PH": "Physics Building",
+  "CM": "Commerce Building",
+  "BCS": "Computer Science",
+  "BEd": "B.Ed. Building",
+  "SC": "Science Building",
+  "LAW": "Law College"
+};
 
-    const buildingMapLinks = {
-      "PB": "https://maps.app.goo.gl/95EhvGe1MbxkAaYo6",
-      "KB": "https://maps.app.goo.gl/Qr3EHj2n9n8ihdJV6",
-      "RB": "https://maps.app.goo.gl/tNejbMhUYANjxXnRA",
-      "PH": "https://maps.app.goo.gl/HsWbkh2ALnSV82dAA",
-      "CM": "https://maps.app.goo.gl/jNMzzjPQ76ycuPhn7",
-      "BCS": "https://maps.app.goo.gl/rFTkxD2hg6v1tYJS7",
-      "BEd": "https://maps.app.goo.gl/rFTkxD2hg6v1tYJS7",
-      "SC": "https://maps.app.goo.gl/dPnCS6jUWUNRxAdF7",
-      "LAW": "https://maps.app.goo.gl/4KWi7pgzgicfm4Vq9"
-    };
+const buildingMapLinks = {
+  "PB": "https://maps.app.goo.gl/95EhvGe1MbxkAaYo6",
+  "KB": "https://maps.app.goo.gl/Qr3EHj2n9n8ihdJV6",
+  "RB": "https://maps.app.goo.gl/tNejbMhUYANjxXnRA",
+  "PH": "https://maps.app.goo.gl/HsWbkh2ALnSV82dAA",
+  "CM": "https://maps.app.goo.gl/jNMzzjPQ76ycuPhn7",
+  "BCS": "https://maps.app.goo.gl/rFTkxD2hg6v1tYJS7",
+  "BEd": "https://maps.app.goo.gl/rFTkxD2hg6v1tYJS7",
+  "SC": "https://maps.app.goo.gl/dPnCS6jUWUNRxAdF7",
+  "LAW": "https://maps.app.goo.gl/4KWi7pgzgicfm4Vq9"
+};
 
-    let studentData = [];
+let studentData = [];
 
-    function formatDateToDDMMYYYY(dateStr) {
-      const parts = dateStr.split("-");
-      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+function formatDateToDDMMYYYY(dateStr) {
+  const parts = dateStr.split("-");
+  return `${parts[2]}-${parts[1]}-${parts[0]}`;
+}
+
+function loadStudentData(callback) {
+  Papa.parse(sheetURL, {
+    download: true,
+    header: true,
+    complete: function(results) {
+      studentData = results.data;
+      callback();
     }
+  });
+}
 
-    function loadStudentData(callback) {
-      Papa.parse(sheetURL, {
-        download: true,
-        header: true,
-        complete: function(results) {
-          studentData = results.data;
-          callback();
-        }
-      });
-    }
+function findStudent() {
+  const seatNoInput = document.getElementById("seatNo").value.trim().toUpperCase();
+  const examDateInput = document.getElementById("examDate").value;
 
-    function findStudent() {
-      const seatNoInput = document.getElementById("seatNo").value.trim().toUpperCase();
-      const examDateInput = document.getElementById("examDate").value;
+  if (!seatNoInput || !examDateInput) {
+    alert("Please enter Seat Number and Exam Date");
+    return;
+  }
 
-      if (!seatNoInput || !examDateInput) {
-        alert("Please enter Seat Number and Exam Date");
-        return;
-      }
+  const formattedDate = formatDateToDDMMYYYY(examDateInput);
 
-      const formattedDate = formatDateToDDMMYYYY(examDateInput);
+  if (studentData.length === 0) {
+    loadStudentData(() => matchStudents(seatNoInput, formattedDate));
+  } else {
+    matchStudents(seatNoInput, formattedDate);
+  }
+}
 
-      if (studentData.length === 0) {
-        loadStudentData(() => matchStudents(seatNoInput, formattedDate));
+function matchStudents(seatNo, examDate) {
+  const matches = studentData.filter(
+    s => s.SeatNo.toUpperCase() === seatNo && s.ExamDate === examDate
+  );
+
+  const resultsDiv = document.getElementById("results");
+  resultsDiv.innerHTML = "";
+
+  if (matches.length > 0) {
+    matches.forEach(student => {
+      const { status, showDetails } = getExamDisplayStatus(student.Time);
+      const card = document.createElement("div");
+      card.classList.add("result-card");
+
+      if (showDetails) {
+        const buildingCode = student.Building.trim();
+        const buildingFullName = buildingNames[buildingCode] || buildingCode;
+
+        card.innerHTML = `
+          <h2>${student.Name}</h2>
+          <p><strong>Seat No:</strong> ${student.SeatNo}</p>
+          <p><strong>Building:</strong> ${buildingFullName}</p>
+          <p><strong>Block:</strong> ${buildingCode}-${student.Block}</p>
+          <p><strong>Time:</strong> <span class="time">${student.Time}</span></p>
+
+          <button onclick="openMap('${buildingCode}')">View on Google Map</button>
+
+          <!-- Instruction Images -->
+          <div class="instructions">
+            <img src="instruction1.jpeg" alt="Instruction 1">
+            <img src="instruction2.jpeg" alt="Instruction 2">
+          </div>
+        `;
       } else {
-        matchStudents(seatNoInput, formattedDate);
-      }
-    }
-
-    function matchStudents(seatNo, examDate) {
-      const matches = studentData.filter(
-        s => s.SeatNo.toUpperCase() === seatNo && s.ExamDate === examDate
-      );
-
-      const resultsDiv = document.getElementById("results");
-      resultsDiv.innerHTML = "";
-
-      if (matches.length > 0) {
-        matches.forEach(student => {
-          const { status, showDetails } = getExamDisplayStatus(student.Time);
-
-          const card = document.createElement("div");
-          card.classList.add("result-card");
-
-          if (showDetails) {
-            const buildingCode = student.Building.trim();
-            const buildingFullName = buildingNames[buildingCode] || buildingCode;
-            const blockInfo = `${buildingCode}-${student.Block}`;
-            const timeInfo = student.Time || "Not available";
-
-            card.innerHTML = `
-              <h2>${student.Name}</h2>
-              <p><strong>Seat No:</strong> ${student.SeatNo}</p>
-              <p><strong>Building:</strong> ${buildingFullName}</p>
-              <p><strong>Block:</strong> ${blockInfo}</p>
-              <p><strong>Time:</strong> <span class="time">${timeInfo}</span></p>
-              <button onclick="openMap('${buildingCode}')">View on Google Map</button>
-
-              <!-- ✅ NEW: Instruction Images -->
-              <div class="instructions">
-                <img src="instruction1.jpeg">
-                <img src="instruction2.jpeg">
-              </div>
-            `;
-          } else {
-            card.innerHTML = `<p class="time">${status}</p>`;
-          }
-
-          resultsDiv.appendChild(card);
-        });
-        resultsDiv.style.display = "block";
-      } else {
-        alert("No record found. Please check the seat number or date.");
-        resultsDiv.style.display = "none";
-      }
-    }
-
-    function getExamDisplayStatus(timeStr) {
-      if (!timeStr) return { status: "Invalid time data", showDetails: false };
-
-      const parts = timeStr.split("TO");
-      if (parts.length !== 2) return { status: "Invalid time format", showDetails: false };
-
-      const start = parts[0].trim();
-      const end = parts[1].trim();
-
-      const now = new Date();
-      const today = new Date(now.toDateString());
-
-      function parseTime(t) {
-        const [time, period] = t.split(" ");
-        const [hour, minute] = time.split(".").map(Number);
-        let h = hour;
-        if (period.toUpperCase().includes("P") && h !== 12) h += 12;
-        if (period.toUpperCase().includes("A") && h === 12) h = 0;
-        return new Date(today.getFullYear(), today.getMonth(), today.getDate(), h, minute || 0);
+        card.innerHTML = `<p class="time">${status}</p>`;
       }
 
-      const startTime = parseTime(start);
-      const endTime = parseTime(end);
-      const before30 = new Date(startTime.getTime() - 30 * 60000);
-      const after30 = new Date(startTime.getTime() + 30 * 60000);
+      resultsDiv.appendChild(card);
+    });
 
-      if (now < before30) {
-        return {
-          status: `Check details at ${formatTime(before30)}.`,
-          showDetails: false
-        };
-      } else if (now >= before30 && now <= after30) {
-        return { status: "", showDetails: true };
-      } else if (now > after30 && now <= endTime) {
-        return { status: "Exam has already started. You cannot check details now.", showDetails: false };
-      } else if (now > endTime) {
-        return { status: "Exam is over.", showDetails: false };
-      }
+    resultsDiv.style.display = "block";
+  } else {
+    alert("No record found. Please check the seat number or date.");
+    resultsDiv.style.display = "none";
+  }
+}
 
-      function formatTime(d) {
-        let h = d.getHours();
-        const m = d.getMinutes().toString().padStart(2, "0");
-        const ampm = h >= 12 ? "P.M." : "A.M.";
-        h = h % 12 || 12;
-        return `${h}:${m} ${ampm}`;
-      }
-    }
+function getExamDisplayStatus(timeStr) {
+  if (!timeStr) return { status: "Invalid time data", showDetails: false };
 
-    function openMap(buildingCode) {
-      const mapURL = buildingMapLinks[buildingCode];
-      if (mapURL) {
-        window.open(mapURL, "_blank");
-      } else {
-        alert("Map location for this building is not available.");
-      }
-    }
-  </script>
+  const parts = timeStr.split("TO");
+  if (parts.length !== 2) return { status: "Invalid time format", showDetails: false };
+
+  const start = parts[0].trim();
+  const end = parts[1].trim();
+
+  const now = new Date();
+  const today = new Date(now.toDateString());
+
+  function parseTime(t) {
+    const [time, period] = t.split(" ");
+    const [hour, minute] = time.split(".").map(Number);
+    let h = hour;
+    if (period.includes("P") && h !== 12) h += 12;
+    if (period.includes("A") && h === 12) h = 0;
+    return new Date(today.getFullYear(), today.getMonth(), today.getDate(), h, minute || 0);
+  }
+
+  const startTime = parseTime(start);
+  const endTime = parseTime(end);
+  const before30 = new Date(startTime.getTime() - 30 * 60000);
+  const after30 = new Date(startTime.getTime() + 30 * 60000);
+
+  if (now < before30) return { status: "Too early. Try later.", showDetails: false };
+  if (now <= after30) return { status: "", showDetails: true };
+  if (now <= endTime) return { status: "Exam started. Entry closed.", showDetails: false };
+
+  return { status: "Exam is over.", showDetails: false };
+}
+
+function openMap(code) {
+  if (buildingMapLinks[code]) {
+    window.open(buildingMapLinks[code], "_blank");
+  } else {
+    alert("Map not available");
+  }
+}
+</script>
+
 </body>
 </html>
